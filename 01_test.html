@@ -1,0 +1,236 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Test</title>
+    
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script type="text/javascript">
+        window.onload = function () {
+
+            var sample = new Vue({
+                el: '#app',
+                data: {
+                    items: [],
+                    input: {
+                        id: '',
+                        name: '',
+                        surname: '',
+                        phone: '',
+                        email: '',
+                        jso:''
+                    },
+                    savebtn: true,
+                    updatebtn: false,
+                   
+                    
+                
+                },
+                created: function () {
+                    
+                    this.items = JSON.parse(localStorage.getItem('items') || '[]');
+                },
+                methods: {
+                    localData: function () {
+                        let parsed = JSON.stringify(this.items);
+                        localStorage.setItem('items', parsed);
+                    },
+                    
+                    adduser: function () {
+                        
+                        this.savebtn= true
+                        this.updatebtn=false
+                        
+                    },
+
+                    save: function () {
+                       
+                                var id = this.input.id;
+                                var nm = this.input.name;
+                                var sm = this.input.surname;
+                                var pn = this.input.phone;
+                                var em = this.input.email;
+                                var str = this.input.jso;
+                                if (str != '') {
+                                    this.items.push(JSON.parse(str))
+                                } else {
+                                    if (id != '' || nm != '' || sm != '' || pn!='' || em!=''){
+
+                                    
+                                        this.items.push({ id: id, name: nm, surname: sm, phone: pn, email: em })
+                                    }
+                                    
+                                }
+
+                                
+                                
+
+                                
+
+                                console.log(this.items)
+
+                             
+                        
+                        this.clear();
+
+                        this.localData();
+                       
+                        
+                    },
+                    clear: function () {
+                        this.savebtn = true;
+                        this.updatebtn = false;
+                        this.input.id = '';
+                        this.input.name = '';
+                        this.input.surname = '';
+                        this.input.phone = '';
+                        this.input.email = '';
+                        this.input.jso = '';
+                    },
+                    edit: function (item) {
+                        
+                        this.savebtn = false;
+                        this.updatebtn = true;
+                        this.input.id = item.id;
+                        this.input.name = item.name;
+                        this.input.surname = item.surname;
+                        this.input.phone = item.phone;
+                        this.input.email = item.email;
+                        this.input.jso = '';
+                    },
+                    update: function (id) {
+                       
+                        var myid = id - 1;
+                        Object.assign(this.items[myid], this.input);
+                        this.clear();
+
+
+
+                        this.localData();
+                        this.forms = false;
+                        
+                    },
+                    destroy: function (item) {
+                        var del = this.items.indexOf(item);
+                        
+                        this.items.splice(del, 1);
+                        this.localData();
+
+                        
+                    }
+                }
+               
+                
+            });
+        }
+    </script>
+</head>
+
+<body>
+    <div >
+        <br />
+        <div id="app" class="container">
+            <div >
+                <button style="margin-bottom:5px" data-toggle="modal" @click="adduser"  data-target="#myModal"  type="button" class="btn btn-primary" >Add user</button>
+            </div>
+            <table class="table">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">name</th>
+                        <th scope="col">surname</th>
+                        <th scope="col">phone</th>
+                        <th scope="col">email</th>
+                        <th scope="col">&nbsp;</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="item in items" v-bind:key="item.id">
+                        <th scope="row">{{ item.id }}</th>
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.surname }}</td>
+                        <td>{{ item.phone }}</td>
+                        <td>{{ item.email }}</td>
+                        <td>
+                            <button data-toggle="modal" data-target="#myModal" @click="edit(item)" type="button" class="btn btn-primary">Edit</button>
+                            <button @click="destroy(item)" type="button" class="btn btn-danger">Delete</button>
+
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+
+            <!-- The Modal -->
+            <div class="modal" id="myModal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+
+                        <!-- Modal Header -->
+                        <div class="modal-header">
+                            <h4 v-if="savebtn" class="modal-title">Add User</h4>
+                            <h4 v-if="updatebtn" class="modal-title">Edit User</h4>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <form >
+                                <div class="form-group">
+                                    <label>ID</label>
+                                    <input type="text" class="form-control" v-model="input.id" />
+                                </div>
+                                <div class="form-group">
+                                    <label>NAME</label>
+                                    <input type="text" class="form-control" v-model="input.name" />
+                                </div>
+                                <div class="form-group">
+                                    <label>SURNAME</label>
+                                    <input type="text" class="form-control" v-model="input.surname" />
+                                </div>
+                                <div class="form-group">
+                                    <label>PHONE</label>
+                                    <input type="tel" class="form-control" v-model="input.phone" />
+                                </div>
+                                <div class="form-group">
+                                    <label>EMAIL</label>
+                                    <input type="email" class="form-control" v-model="input.email" />
+                                </div>
+                                <div class="form-group">
+                                    <label>Import JSON</label>
+                                    <input placeholder="{ 'id': '2', 'name': '2name', 'surname': 'surname2', 'phone': '2235698', 'email': '1email@gmail.com' }" type="text" class="form-control" v-model="input.jso" />
+                                </div>
+
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button v-if="savebtn" data-dismiss="modal" @click.prevent="save" type="button" class="btn btn-primary">Save</button>
+                            <button v-if="updatebtn" data-dismiss="modal" @click.prevent="update(input.id)" type="button" class="btn btn-danger">Update</button>
+                            <button @click.prevent="clear" type="button" class="btn btn-danger">Clear</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+
+
+<!--{ id: '1', name: '1name', surname: 'surname1', phone: '1235698', email: '0email@gmail.com' },
+                            { id: '2', name: '2name', surname: 'surname2', phone: '2235698', email: '1email@gmail.com' },
+                            { id: '3', name: '3name', surname: 'surname3', phone: '3235698', email: '2email@gmail.com' },
+                            { id: '4', name: '4name', surname: 'surname4', phone: '4235698', email: '3email@gmail.com' },
+                            { id: '5', name: '5name', surname: 'surname5', phone: '5235698', email: '4email@gmail.com' }
+
+
+
+{ "id": "1", "name": "1name", "surname": "surname1", "phone": "1235698", "email": "0email@gmail.com" },
+                            { "id": "2", "name": "2name", "surname": "surname2", "phone": "2235698", "email": "1email@gmail.com" },
+                            { "id": "3", "name": "3name", "surname": "surname3", "phone": "3235698", "email": "2email@gmail.com" },
+                            { "id": "4", "name": "4name", "surname": "surname4", "phone": "4235698", "email": "3email@gmail.com" },
+                            { "id": "5", "name": "5name", "surname": "surname5", "phone": "5235698", "email": "4email@gmail.com" }-->
